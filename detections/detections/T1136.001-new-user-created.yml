@@ -1,1 +1,38 @@
 
+id: a1b2c3d4-0001-4000-a000-000000000001
+name: New User Account Created
+description: >
+  Detects when a new user account is created in Entra ID.
+  Attackers create accounts for persistence — to maintain access
+  even if their original foothold is discovered and removed.
+status: production
+severity: Medium
+author: Abdulrahman Rezki
+date: 2026-06-28
+
+mitre:
+  tactics:
+    - Persistence
+  techniques:
+    - T1136.001
+
+data_sources:
+  - AuditLogs
+
+query: |
+  AuditLogs
+  | where OperationName == "Add user"
+  | project TimeGenerated, OperationName, InitiatedBy, TargetResources
+
+query_frequency: PT1H
+query_period: PT1H
+trigger_operator: gt
+trigger_threshold: 0
+
+false_positives:
+  - Legitimate IT admin creating accounts during onboarding
+
+validation:
+  trigger_action: Create a new user in Entra ID
+  expected_result: alert_fires
+  last_validated: 2026-06-28
